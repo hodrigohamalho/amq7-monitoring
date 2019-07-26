@@ -2,6 +2,8 @@
 
 This is a simple image that demonstrate how to export prometheus metrics from a AMQ Broker image.
 
+For a details, please look at: https://blog.openshift.com/enhanced-openshift-red-hat-amq-broker-container-image-for-monitoring
+
 ## Build a new custom image into your OpenShift namespace :
 
 ```
