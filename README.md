@@ -2,10 +2,10 @@
 
 This is a simple image that demonstrate how to export prometheus metrics from a AMQ Broker image.
 
-Build a new custom image into your OpenShift namespace :
+## Build a new custom image into your OpenShift namespace :
 
 ```
-$ oc new-build openshift/amq-broker-74-openshift:1.2~https://github.com/hodrigohamalho/amq7-custom --name=amq-broker
+$ oc new-build openshift/amq-broker:7.4~https://github.com/hodrigohamalho/amq7-custom --name=amq-broker
 ```
 
 Wait for the build to complete...
