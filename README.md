@@ -7,6 +7,8 @@ For a details, please look at: https://blog.openshift.com/enhanced-openshift-red
 ## Build a new custom image into your OpenShift namespace :
 
 ```
+oc new-project monitorz
+oc label namespace monitorz monitoring-key=middleware integreatly-middleware-service=true
 $ oc new-build openshift/amq-broker:7.4~https://github.com/hodrigohamalho/amq7-custom --name=amq-broker
 ```
 
@@ -15,7 +17,7 @@ Wait for the build to complete...
 After having deployed a broker using Red Hat provided templates, replace the official image by the custom one that you just built.
 
 ```
-$ oc set triggers dc/broker-amq --containers=broker-amq --from-image=custom-amq-broker-72-openshift:latest
+$ oc set triggers dc/broker-amq --containers=broker-amq --from-image=amq-broker:latest
 ```
 
 A redeployment should occur. In order to activate the `jmx_exporter_prometheus_agent`, you'll have to tweek the Java startup command line by adding a new environment variable to Deployment configuration:

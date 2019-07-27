@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: amq-broker
+  labels:
+    monitoring-key: 'middleware'
+name: amq-broker
+spec:
+  endpoints:
+  - port: broker-amq-prometheus
+    path: /
+  selector:
+      matchLabels:
+        application: broker
