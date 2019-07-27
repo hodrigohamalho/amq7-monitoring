@@ -125,7 +125,7 @@ spec:
           "tableColumn": "runtime",
           "targets": [
             {
-              "expr": "jvm_info{kubernetes_namespace=\"$namespace\",service=\"$broker\",instance=\"$instance\"}",
+              "expr": "jvm_info{namespace=\"$namespace\",service=\"$broker\",instance=\"$instance\"}",
               "format": "table",
               "instant": true,
               "intervalFactor": 1,
