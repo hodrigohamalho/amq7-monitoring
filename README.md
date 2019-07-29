@@ -12,9 +12,16 @@ Key steps to enable the AMQ Broker monitoring:
 
 ## Install AMQ 7 into your cluster
 
+Create the imagestream:
+
+```
 oc replace --force  -f \
 https://raw.githubusercontent.com/jboss-container-images/jboss-amq-7-broker-openshift-image/74-7.4.0.GA/amq-broker-7-image-streams.yaml -n openshift
+```
 
+Create the templates: 
+
+```
 for template in amq-broker-74-basic.yaml \
 amq-broker-74-ssl.yaml \
 amq-broker-74-custom.yaml \
@@ -26,6 +33,7 @@ amq-broker-74-persistence-clustered-ssl.yaml;
  oc replace --force -f \
 https://raw.githubusercontent.com/jboss-container-images/jboss-amq-7-broker-openshift-image/74-7.4.0.GA/templates/${template} -n openshift
  done
+ ```
 
  [More info on Official doc](https://access.redhat.com/documentation/en-us/red_hat_amq/7.4/html-single/deploying_amq_broker_on_openshift_container_platform/index#installing-broker-ocp_broker-ocp)
 
