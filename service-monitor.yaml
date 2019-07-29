@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: amq-broker
+  name: ${APPLICATION_NAME}
   labels:
     monitoring-key: 'middleware'
 name: amq-broker
@@ -11,4 +11,4 @@ spec:
     path: /
   selector:
       matchLabels:
-        application: broker
+        application: amq-broker

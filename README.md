@@ -1,37 +1,54 @@
-# AMQ 7 Custom Image
+# AMQ 7 (Artemis) Broker with Prometheus Grafana Monitoring enabled
 
-This is a simple image that demonstrate how to export prometheus metrics from a AMQ Broker image.
+This is an example to how construct an AMQ Broker image with monitoring enabled. 
 
-For a details, please look at: https://blog.openshift.com/enhanced-openshift-red-hat-amq-broker-container-image-for-monitoring
+It was tested on the [Red Hat Integreatly Application Monitoring Operator](https://github.com/integr8ly/application-monitoring-operator) . But it would be easy tweaked to work with your own custom Prometheus/Grafana.
 
+Key steps to enable the AMQ Broker monitoring:
+
+* Expose JMX as Prometheus metrics (Enabled by jmx Prometheus javaagent)
+* [Create a service monitor object (scrap metrics to Prometheus)](./service-monitor.yaml)
+* [Create a Grafana dashboard object](./grafana-dashboard.yaml)
+
+## Install AMQ 7 into your cluster
+
+oc replace --force  -f \
+https://raw.githubusercontent.com/jboss-container-images/jboss-amq-7-broker-openshift-image/74-7.4.0.GA/amq-broker-7-image-streams.yaml -n openshift
+
+for template in amq-broker-74-basic.yaml \
+amq-broker-74-ssl.yaml \
+amq-broker-74-custom.yaml \
+amq-broker-74-persistence.yaml \
+amq-broker-74-persistence-ssl.yaml \
+amq-broker-74-persistence-clustered.yaml \
+amq-broker-74-persistence-clustered-ssl.yaml;
+ do
+ oc replace --force -f \
+https://raw.githubusercontent.com/jboss-container-images/jboss-amq-7-broker-openshift-image/74-7.4.0.GA/templates/${template} -n openshift
+ done
+
+ [More info on Official doc](https://access.redhat.com/documentation/en-us/red_hat_amq/7.4/html-single/deploying_amq_broker_on_openshift_container_platform/index#installing-broker-ocp_broker-ocp)
+
+ 
 ## Build a new custom image into your OpenShift namespace :
+
+```
+oc new-build openshift/amq-broker:7.4~https://github.com/hodrigohamalho/amq7-custom --name=amq --build-secret=imagestreamsecret -n openshift
+```
+
+If the builds worked properly, now we can deploy the AMQ Broker:
+
+## Create the project and deploy
 
 ```
 oc new-project monitorz
 oc label namespace monitorz monitoring-key=middleware integreatly-middleware-service=true
-$ oc new-build openshift/amq-broker:7.4~https://github.com/hodrigohamalho/amq7-custom --name=amq-broker
+oc create -f amq-broker-monitoring.yaml
+oc new-app amq-broker-monitoring
 ```
 
-Wait for the build to complete...
+After it, the dashboard will appear on the Kibana. 
 
-After having deployed a broker using Red Hat provided templates, replace the official image by the custom one that you just built.
-
-```
-$ oc set triggers dc/broker-amq --containers=broker-amq --from-image=amq-broker:latest
-```
-
-A redeployment should occur. In order to activate the `jmx_exporter_prometheus_agent`, you'll have to tweek the Java startup command line by adding a new environment variable to Deployment configuration:
-
-```
-$ oc set env dc/broker-amq JAVA_OPTS="-Dcom.sun.management.jmxremote=true -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote.port=1099 -Dcom.sun.management.jmxremote.ssl=true -Dcom.sun.management.jmxremote.registry.ssl=true -Dcom.sun.management.jmxremote.ssl.need.client.auth=true -Dcom.sun.management.jmxremote.authenticate=false -javaagent:/opt/amq/lib/optional/jmx_prometheus_javaagent-0.12.0.jar=9779:/opt/amq/conf/prometheus-config.yml"
-```
-
-All the `com.sun.management` related properties are necessary if you want to have all the Artemis metrics exposed. Otherwise you'll just get the JVM metrics.
-
-Now in order to get this metrics scraped by your Prometheus instance, you may need to add some expositions and/or annotations. This depend on how your Prometheus rules were configured. My personal instance only scrape Services that are annotate that way and is looking for information on port and path. Though, I have to add a port to my container, expose it as a service and then annotate that service so that it can be discovered. Here's the corresponding CLI commands below:
-
-```
-$ oc patch dc/broker-amq --type=json -p '[{"op":"add", "path":"/spec/template/spec/containers/0/ports/-", "value": {"containerPort": 9779, "name": "prometheus", "protocol": "TCP"}}]'
-$ oc expose dc/broker-amq --name=broker-amq-prometheus --port=9779 --target-port=9779 --protocol="TCP"
-$ oc annotate svc/broker-amq-prometheus prometheus.io/scrape='true' prometheus.io/port='9779' prometheus.io/path='/'
-```
+![][docs/amq-broker0.png]
+![][docs/amq-broker1.png]
+![][docs/amq-broker2.png]
