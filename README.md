@@ -57,8 +57,8 @@ oc new-app amq-broker-monitoring
 
 After it, the dashboard will appear on the Kibana. 
 
-![instance][./docs/amq-broker0.png]
+![instance](./docs/amq-broker0.png)
 
-![kibana][./docs/amq-broker1.png]
+![kibana](./docs/amq-broker1.png)
 
-![kibana][./docs/amq-broker2.png]
+![kibana](./docs/amq-broker2.png)
