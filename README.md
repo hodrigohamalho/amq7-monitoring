@@ -1,4 +1,4 @@
-# AMQ 7 (Artemis) Broker with Prometheus Grafana Monitoring enabled
+# AMQ 7 (Artemis) on Openshift with Prometheus Grafana Monitoring enabled
 
 This is an example to how construct an AMQ Broker image with monitoring enabled. 
 
