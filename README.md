@@ -62,3 +62,7 @@ After it, the dashboard will appear on the Kibana.
 ![kibana](./docs/amq-broker1.png)
 
 ![kibana](./docs/amq-broker2.png)
+
+![artemis metrics](./docs/amq-broker3.png)
+
+![jvm metrics](./docs/amq-broker4.png)
